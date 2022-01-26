@@ -1,14 +1,24 @@
 const express = require('express');
+const db = require('../fileDb');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    res.send('list of messages');
+    const messages = db.getMessages();
+    return res.send(messages);
 });
-router.get('/:id', (req, res) => {
-    res.send('one message');
+router.get('/:date', (req, res) => {
+    const message = db.getMessage(req.params.date);
+    if (!message) {
+        return res.status(404).send({message: 'Not found!'});
+    }
+    return res.send(message);
 });
 router.post('/', (req, res) => {
-    res.send('created');
+    const message = {
+        message: req.body.message
+    };
+    const messageFromServer = db.addMessage(message);
+    return res.send(messageFromServer);
 });
 
 module.exports = router;
